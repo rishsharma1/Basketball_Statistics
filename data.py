@@ -78,7 +78,7 @@ def get_season_data(data,season):
 	return season_info
 
 data = get_all_data('dataclean.csv')
-print get_season_data(data,'2004-05')
+
 
 
 
