@@ -36,49 +36,30 @@ def get_index(data,key,query):
 			pos.append(val)
 	return pos
 
-#returns a dictionary of a given player's stats			
-#throught 1999-2007
-def get_player_data(data,player):
+#returns a dictionary of a specific targeted data
+#this can be a specific season's data, or specific
+#player stats etc.
+def get_specific_data(data,att,query):
 
-	player_info = {}
+	specific_info = {}
 
 	#all the index positions of given player
-	pos = get_index(data,'Player',player)
+	pos = get_index(data,att,query)
 
 	for i in pos:
 
 		for key in data.keys():
 
 			try:
-				player_info[key].append(data[key][i])
+				specific_info[key].append(data[key][i])
 			except KeyError:
-				player_info[key] = [data[key][i]]
-	return player_info
-
-#gets all data for a given season
-
-def get_season_data(data,season):
-
-	season_info = {}
-
-	pos = get_index(data,'Season',season)
-
-	for i in pos:
+				specific_info[key] = [data[key][i]]
+	return specific_info
 
 
-		for key in data.keys():
-
-			try:
-				season_info[key].append(data[key][i])
-				
-			except KeyError:
-				season_info[key] = [data[key][i]]
-			
-	
-	return season_info
 
 data = get_all_data('dataclean.csv')
-
+print get_specific_data(data,'Tm','LAL')['FG']
 
 
 
