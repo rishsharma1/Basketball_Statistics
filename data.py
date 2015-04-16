@@ -1,6 +1,5 @@
 import csv
-
-
+import pdb
 
 
 #will get all the data that is in 
@@ -63,21 +62,23 @@ def get_season_data(data,season):
 	season_info = {}
 
 	pos = get_index(data,'Season',season)
-	print pos
+
 	for i in pos:
-		
+
+
 		for key in data.keys():
 
 			try:
-				season_info[key].append(data[key][pos[i]])
+				season_info[key].append(data[key][i])
+				
 			except KeyError:
-				season_info[key] = [data[key][pos[i]]]
-			except IndexError:
-				continue
+				season_info[key] = [data[key][i]]
+			
 	
 	return season_info
 
 data = get_all_data('dataclean.csv')
+
 
 
 
