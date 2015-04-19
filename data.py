@@ -57,6 +57,15 @@ def get_specific_data(data,att,query):
 				specific_info[key] = [data[key][i]]
 	return specific_info
 
+#returns data for a player from a specific season
+def get_player_season(data,player,season):
+
+	return get_specific_data(get_specific_data(data,'Player',player),'Season',season)
+
+#returns data for a team from a specific season 
+def get_team_season(data,team,season):
+	return get_specific_data(get_specific_data(data,'Tm',team),'Season',season)
+
 #takes a list of numerical values
 #returns standard deviation (population)
 def get_std_dev(alist):
