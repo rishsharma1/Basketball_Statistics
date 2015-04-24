@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    
+    <head>
+        <title>Select Data</title>
+        
+        
+        <!-- this ensures mobile phones don't display desktop versions -->
+        <meta name="viewport" content="width=device-width,intial-scale=1.0">
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/styles.css" rel="stylesheet">
+        
+    </head>
+    
+    <body>
+        
+        <div class="navbar navbar-inverse navbar-static-top">
+            
+            <div class="container">
+                
+                <a href="#"class="navbar-brand">Basketball</a>
+                
+                <button class ="navbar-toggle" data-toggle ="collapse" data-target =".navHeaderCollapse">
+                    <span class = "icon-bar"></span>
+                    <span class = "icon-bar"></span>
+                    <span class = "icon-bar"></span>
+                </button>
+            
+        
+                <div class="collapse navbar-collapse navHeaderCollapse">
+                
+                    <ul class="nav navbar-nav navbar-left">
+                        <li><a heref="#">Home</a></li>
+                        <li><a href="select.html">Select Data</a></li>
+                         <li><a heref="#">About</a></li>
+                    </ul>
+                </div>
+                    
+            </div>
+                    
+        </div>
+        
+        <div class ="container">
+            
+            <h2>Data Select</h2>
+            <form role="form" action="../controller.py">
+                <div class = "form-group">
+                    <label for="Row">Row:</label>
+                    <select class="form-control" name="row">
+                        <option value="Season">Season</option>
+                        <option value="Player">Player</option>
+                    </select>
+                </div>
+                <div class ="form-group">
+                    <label for="Column">Column:</label>
+                    <select class ="form-control" name="col">
+                        <option value="Season">Season</option>
+                        <option value="Tm">Team</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Value">Value:</label>
+                    <select class="form-control" name="val">
+                        <option value="PTS">Points</option>
+                        <option value="AST">Assits</option>
+                        <option value="STL">Steals</option>
+                        <option value="BLK">Blocks</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="SearchBy">Search By:</label>
+                    <select class="form-control" name="searchby">
+                        <option value="Season">Season</option>
+                        <option value="Player">Player</option>
+                        <option value="Tm">Team</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="Search">Search:</label>
+                    <input type="search" class="form-control" name="search" placeholder="Enter Query">
+                </div>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form> 
+                
+                
+        </div>            
+        
+        
+        <!-- import jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="js/bootstrap.js"></script>
+        
+        
+    </body>
+    
+</html>
