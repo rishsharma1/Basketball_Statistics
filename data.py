@@ -123,13 +123,51 @@ def get_stats(data,begin,end):
 			std_dev = get_std_dev(row)
 			stats.update({key: std_dev})
 
-	return stats	
+	return stats
 
-data = get_all_data('dataclean2.csv')
+def create_table(row,col,val=None):
+    
+    data = get_all_data('dataclean.csv')
+    table_str = ''
+    table_str += 'Content-Type: text/html\n'
+    table_str += '<html><body><table border="1"><tr><td></td><td></td>'
+    #we first need to print the header
+    unique_row = list(set(data[row]))
+    unique_col = list(set(data[col]))
+    count = 0
+    
+    for item in unique_col:
+        
+        table_str += """<td>%s</td>"""%(item)
+    
+    
+    for row_item in unique_row:
+        
+        table_str += """<tr><td>%d</td><td>%s</td>"""%(count,row_item)
+        
+        for col_item in unique_col:
+            
+            needed_data = get_specific_data(get_specific_data(data,row,row_item),col,col_item)
+            
+            if(needed_data):
+                table_str += """<td>%d</td>"""%(sum(map(int,needed_data[val])))
+            else:
+                table_str += '<td></td>'
+        count += 1
+                
+        table_str += '</tr>'
+            
+    table_str += '</tr></table></body></html>'
+    
+    open('output.html','w').write(table_str)
+
+
+create_table('Player','Season','FG')
+
+
+
+data = get_all_data('dataclean.csv')
+
+
 #data = get_all_data('test.csv')
-print get_specific_data(data,'Tm','LAL')['FG']
 
-print get_stats(data,1999,2000)
-#print get_stats(data,0,50)
-
-#hello
