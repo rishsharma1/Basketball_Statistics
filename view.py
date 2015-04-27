@@ -11,14 +11,18 @@ def create_header():
         
         		<!-- this ensures mobile phones don't display desktop versions -->
         		<meta name="viewport" content="width=device-width,intial-scale=1.0">
-        		<link href="css/bootstrap.min.css" rel="stylesheet">
-        		<link href="css/styles.css" rel="stylesheet">
+        		<link href="pages/css/bootstrap.min.css" rel="stylesheet">
+        		<link href="pages/css/styles.css" rel="stylesheet">
         
    			 </head>"""
- 
+
 
 def create_nav_bar():
 	return """<body>
+
+				   <!-- import jQuery -->
+        		  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+       			  <script src="js/bootstrap.js"></script>
         
         	  	<div class="navbar navbar-inverse navbar-static-top">
             
@@ -45,3 +49,12 @@ def create_nav_bar():
             		</div>
                     
         		</div>"""
+
+def create_table(table_str):
+	output = create_header()+create_nav_bar()
+
+	#add styling here
+	output += """<table class="table table-striped table-bordered table-hover" style="width: auto;" align ="center">"""
+	f = open('output.html','w')
+	f.write(output+table_str)
+	f.close()

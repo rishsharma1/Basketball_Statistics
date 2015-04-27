@@ -124,7 +124,7 @@ def get_stats(data,begin,end):
 
 #takes parameters passed from html form
 #returns string of html coding a pivot table
-def create_table(row,col,val,mode,searchby="",search=""):
+def create_table_str(row,col,val,mode,searchby="",search=""):
     
     data = get_all_data('dataclean.csv')
     table_str = '<tr><td></td><td></td>'    
@@ -196,4 +196,4 @@ def create_table(row,col,val,mode,searchby="",search=""):
     return table_str
 
 
-    
+
