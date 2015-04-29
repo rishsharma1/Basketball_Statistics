@@ -180,7 +180,7 @@ def create_table_str(row,col,val,mode,searchby="",search=""):
                 else:
                     
                     average = aggregate / float(len(needed_data[val]))
-                    table_str += """<td>%d</td>"""%(average)                  
+                    table_str += """<td>%.2f</td>"""%(average)                  
             
             #no value found            
             else:

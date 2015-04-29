@@ -15,7 +15,7 @@ searchby = form.getvalue("searchby")
 search = form.getvalue("search")
 
 #get pivot table 
-html_str = data.create_table_str('Player', 'Season', 'PTS','AGG')
+html_str = data.create_table_str(row, col, val,mode,searchby,search)
 
 if(html_str):
-	view.create_table(html_str)
+    view.create_table(html_str)
