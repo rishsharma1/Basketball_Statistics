@@ -5,6 +5,15 @@ SEASON_LENGTH = 81
 MAX_AST_PG = 10
 ASSISTS_INTERVAL = 1
 AGE_INTERVAL = 5
+WS_INTERVAL = 2
+PTS_INTERVAL = 5
+EFG_INTERVAL = 0.1
+BLK_INTERVAL = 0.5
+STL_INTERVAL = 0.5
+TOV_INTERVAL = 0.5 
+
+
+
 
 #will get all the data that is in 
 #the csv file, some of this data may
@@ -200,6 +209,18 @@ def filter_data_bin(data,filter_by,filter_val,factor):
 def filter_row_col(row_index,col_index):
     return list(set.intersection(set(row_index),set(col_index)))
 
+def get_bin_header(start,end,interval):
+
+    curr = start
+    header = []
+
+    while curr < end:
+        header.append((curr,curr+interval))
+        curr = curr+interval
+
+    return header
+
+
 
 kobe_data = get_specific_data(all_data,'Player','Kobe Bryant')
 ass_bin = filter_data_bin(all_data,'AST',8,1)
@@ -210,6 +231,5 @@ for index in u:
     print all_data['Player'][index]
 
 print assists_bin(kobe_data)
-print min(map(float,all_data['WS']))
-
+print get_bin_header(0,4,BLK_INTERVAL)
         
