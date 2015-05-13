@@ -212,6 +212,28 @@ def filter_data_bin(data,filter_by,filter_val):
 def filter_row_col(row_index,col_index):
     return list(set.intersection(set(row_index),set(col_index)))
 
+
+def att_intervals():
+
+    interval = {}
+    interval['AST'] = ASSISTS_INTERVAL
+    interval['Age'] = AGE_INTERVAL
+    inteval['WS'] = WS_INTERVAL
+    interval['PTS'] = PTS_INTERVAL
+    interval['eFG%'] = EFG_INTERVAL
+    interval['STL'] = STL_INTERVAL
+    interval['BLK'] = BLK_INTERVAL
+    interval['STL'] = STL_INTERVAL
+    interval['TOV'] = TOV_INTERVAL
+
+    return interval
+
+def min_max(data,item):
+    converted = map(float,data[item])
+    return  (min(converted),max(converted))
+
+
+
 def get_bin_header(start,end,interval):
 
     curr = start
@@ -223,10 +245,27 @@ def get_bin_header(start,end,interval):
 
     return header
 
+def get_bin_str(header):
+
+    bin_str = []
+
+    for i in range(len(header)):
+
+        bin_str.append(str(header[i][0]) + "to" +str(header[i][1]))
+
+    return bin_str
+
+
+
+
 
 
 all_data = get_all_data('dataclean.csv')
 
 kobe = get_index(all_data,'Player','Kobe Bryant')
+
+header = get_bin_header(0,MAX_AST_PG,1)
+header_str = get_bin_str(header)
+print header_str
 
         

@@ -24,9 +24,24 @@ if prev_page == 'select.html':
 	try:
 		
 		all_data = data.get_all_data('dataclean.csv')
+		interval = data.att_intervals()
+		row_min_max = data.min_max(all_data,row)
+		col_min_max = data.min_max(all_data,col)
+
 		#get key elements from row and column 
-		unique_row = data.create_keys(all_data, row)
-		unique_col  = data.create_keys(all_data, col)
+		if row in ['Season','Tm']:
+			unique_row = data.create_keys(all_data, row)
+			unique_row_str = unique_row
+		else:
+			unique_row = data.get_bin_header(row_min_max[0],row_min_max[1],interval[row])
+			unique_row_str = data.get_bin_str(unique_row)
+
+		if col in ['Season','Tm']:
+			unique_col = data.create_keys(all_data,col)
+			unique_col_str = unique_col
+		else:
+			unique_col = data.get_bin_header(col_min_max[0],col_min_max[1],interval[col])
+			unique_col_str = data.get_bin_str(unique_col)
 		#if search query is passed, filter unique_row or unique_col using the query
 		if searchby and search:
 		
@@ -48,10 +63,11 @@ if prev_page == 'select.html':
 		pvt_vals = data.get_pvt_vals(all_data, row, col, val, mode, unique_row, unique_col)
 		
 		#get html of the pivot table contents
-		html_str = data.create_table_str(pvt_vals, unique_row)
+
+		html_str = data.create_table_str(pvt_vals, unique_row_str)
 		
 		if(html_str):
-			view.print_table(pvt_vals, row, unique_row, unique_col, html_str)
+			view.print_table(pvt_vals, row, unique_row_str, unique_col_str, html_str)
 	
 	except ValueError as val_err:
 
