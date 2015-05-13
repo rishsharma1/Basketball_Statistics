@@ -132,6 +132,7 @@ def create_table_css(pvt_vals, row_len, col_len):
                     pvt_val = maxval
                     
                 #pick a color by calculating the relative position of the cell value using hsl
+                
                 rel_pos = int(abs(math.ceil((((pvt_val - minval) / float(maxval - minval)) * 100))))
                 table_css_str += '/* min=%f, max = %f, rel_pos=%d */\n'%(minval, maxval, rel_pos)
                 if rel_pos >= 51:

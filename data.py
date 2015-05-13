@@ -95,15 +95,16 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
     pvt_vals = [] 
     #used for sorting
     count = 0
+    
 
     for row_item in unique_row:
-
+        
         temp_row = []
 
         if row in ['Season','Tm']:
             row_data = get_specific_data(data,row,row_item)
         else:
-            row_data = filter_dic(all_data,filter_data_bin(all_data,row,row_item))
+            row_data = filter_dic(data,filter_data_bin(data,row,row_item))
 
         
 
@@ -126,12 +127,13 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
                     temp_row.append(tot)
                 
                 elif mode == "COUNT":
-                    count = len(needed_data[val])
-                    temp_row.append(tot)    
+                    count_items = len(needed_data[val])
+                    temp_row.append(count_items)    
                 
                 else:
                     
-                    average = int(tot / float(len(needed_data[val])))
+                    tot = sum(map(int,needed_data[val]))
+                    average = int(tot/ float(len(needed_data[val])))
                     temp_row.append(average)
 
             #for blank cell 
@@ -141,6 +143,7 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
             
         pvt_vals.append((count, temp_row))
         count += 1
+        
             
     return sort_pvt_vals(pvt_vals)
 
@@ -218,7 +221,7 @@ def att_intervals():
     interval = {}
     interval['AST'] = ASSISTS_INTERVAL
     interval['Age'] = AGE_INTERVAL
-    inteval['WS'] = WS_INTERVAL
+    interval['WS'] = WS_INTERVAL
     interval['PTS'] = PTS_INTERVAL
     interval['eFG%'] = EFG_INTERVAL
     interval['STL'] = STL_INTERVAL
@@ -230,7 +233,14 @@ def att_intervals():
 
 def min_max(data,item):
     converted = map(float,data[item])
-    return  (min(converted),max(converted))
+    
+    if item in ['WS','eFG%','Age']:
+        return  (min(converted),max(converted))
+    else:
+        return (min(converted)/SEASON_LENGTH,max(converted)/SEASON_LENGTH)
+        
+    
+    
 
 
 
@@ -260,12 +270,5 @@ def get_bin_str(header):
 
 
 
-all_data = get_all_data('dataclean.csv')
-
-kobe = get_index(all_data,'Player','Kobe Bryant')
-
-header = get_bin_header(0,MAX_AST_PG,1)
-header_str = get_bin_str(header)
-print header_str
 
         
