@@ -3,6 +3,8 @@ from collections import defaultdict
 
 SEASON_LENGTH = 81
 MAX_AST_PG = 10
+ASSISTS_INTERVAL = 1
+AGE_INTERVAL = 5
 
 #will get all the data that is in 
 #the csv file, some of this data may
@@ -20,7 +22,7 @@ def get_all_data(input_file):
             try:
                 store[key].append(row[key])
             except KeyError:
-                store[key] = [row[key]] 
+                store[key] = [row[key]]
 
     return store
 
@@ -167,9 +169,47 @@ def assists_bin(data):
 
     return ast_binned
 
+def create_filter_dic(atts):
+    filter_dic = {}
+    for item in atts:
+        filter_dic[item] = [] 
+
+    return filter_dic
+
+
+def filter_data_bin(data,filter_by,filter_val,factor):
+
+    store = []
+
+    for index in range(len(data[filter_by])):
+
+        if filter_by in ['WS','eFG%','Age']:
+
+            val = float(data[filter_by][index])
+  
+        else:
+            val = float(data[filter_by][index])/SEASON_LENGTH
+
+        if val >= filter_val and val < filter_val + factor:
+                        store.append(index)
+
+    return store
+
+
+
+def filter_row_col(row_index,col_index):
+    return list(set.intersection(set(row_index),set(col_index)))
+
+
 kobe_data = get_specific_data(all_data,'Player','Kobe Bryant')
+ass_bin = filter_data_bin(all_data,'AST',8,1)
+ppg_bin = filter_data_bin(all_data,'PTS',15,5)
+u = filter_row_col(ass_bin,ppg_bin)
+print ass_bin
+for index in u:
+    print all_data['Player'][index]
 
 print assists_bin(kobe_data)
-
+print min(map(float,all_data['WS']))
 
         
