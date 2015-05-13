@@ -25,8 +25,8 @@ if prev_page == 'select.html':
 		
 		all_data = data.get_all_data('dataclean.csv')
 		#get key elements from row and column 
-		unique_row, unique_col = data.create_keys(all_data, row, col)
-		
+		unique_row = data.create_keys(all_data, row)
+		unique_col  = data.create_keys(all_data, col)
 		#if search query is passed, filter unique_row or unique_col using the query
 		if searchby and search:
 		

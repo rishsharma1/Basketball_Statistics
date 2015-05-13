@@ -76,14 +76,13 @@ def get_player_season(data,player,season):
 def get_team_season(data,team,season):
     return get_specific_data(get_specific_data(data,'Tm',team),'Season',season)
 
-#returns unique row and column keys 
-def create_keys(data, row, col):
+#returns unique row or column keys 
+def create_keys(data, item):
     
     #create lists containing unique keys, row and column
-    unique_row = sorted(list(set(data[row])))
-    unique_col = sorted(list(set(data[col])))
+    unique_item = sorted(list(set(data[item])))
     
-    return [unique_row, unique_col]    
+    return unique_item    
 
 #sort the rows of pivot table by the number of empty elements in each row
 def sort_pvt_vals(pvt_vals):
@@ -118,8 +117,6 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
             
 
             if(needed_data):
-                
-               
                 
                 
                 #sum mode
