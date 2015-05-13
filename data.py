@@ -98,25 +98,40 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
     count = 0
 
     for row_item in unique_row:
-         
+
         temp_row = []
+
+        if row in ['Season','Tm']:
+            row_data = get_specific_data(data,row,row_item)
+        else:
+            row_data = filter_dic(all_data,filter_data_bin(all_data,row,row_item))
+
+        
 
         for col_item in unique_col:
             
             #get a list of values corresponding to row and column
-            needed_data = get_specific_data(get_specific_data(data, row, row_item), col, col_item)
+            if col in ['Season','Tm']:
+                needed_data = get_specific_data(row_data,col,col_item)
+            else:
+                needed_data = filter_dic(row_data,filter_data_bin(row_data,col,col_item))
             
+
             if(needed_data):
                 
-                #calculate sum of values in the list
-                tot = sum(map(int,needed_data[val]))
+               
+                
                 
                 #sum mode
                 if mode == "SUM":
-                    
+
+                    tot = sum(map(int,needed_data[val]))
                     temp_row.append(tot)
-                    
-                #average mode
+                
+                elif mode == "COUNT":
+                    count = len(needed_data[val])
+                    temp_row.append(tot)    
+                
                 else:
                     
                     average = int(tot / float(len(needed_data[val])))
@@ -152,31 +167,9 @@ def create_table_str(pvt_vals, unique_row):
   
     return table_str
 
-all_data = get_all_data('dataclean.csv')
 
 
-def assists_bin(data):
 
-    curr = 0
-    ast_binned = defaultdict(int)
-
-    while curr < MAX_AST_PG:
-
-        for index in range(len(data['AST'])):
-
-            val = float(data['AST'][index])/SEASON_LENGTH
-
-            if val >= curr and val < curr+1:
-                ast_binned[str(curr)+' to '+str(curr+1)] += 1
-
-        curr += 1
-    for index in range(len(data['AST'])):
-
-        val = float(data['AST'][index])/SEASON_LENGTH
-        if val >= MAX_AST_PG:
-            ast_binned['>=10'] += 1
-
-    return ast_binned
 
 def create_filter_dic(atts):
     filter_dic = {}
@@ -185,8 +178,21 @@ def create_filter_dic(atts):
 
     return filter_dic
 
+def filter_dic(data,index):
 
-def filter_data_bin(data,filter_by,filter_val,factor):
+    filter_dic = create_filter_dic(data.keys())
+
+    for key in data.keys():
+
+        for i in range(len(data[key])):
+
+            if i in index:
+                filter_dic[key].append(data[key][i])
+
+    return filter_dic
+
+
+def filter_data_bin(data,filter_by,filter_val):
 
     store = []
 
@@ -199,7 +205,7 @@ def filter_data_bin(data,filter_by,filter_val,factor):
         else:
             val = float(data[filter_by][index])/SEASON_LENGTH
 
-        if val >= filter_val and val < filter_val + factor:
+        if val >= filter_val[0] and val < filter_val[1]:
                         store.append(index)
 
     return store
@@ -222,14 +228,8 @@ def get_bin_header(start,end,interval):
 
 
 
-kobe_data = get_specific_data(all_data,'Player','Kobe Bryant')
-ass_bin = filter_data_bin(all_data,'AST',8,1)
-ppg_bin = filter_data_bin(all_data,'PTS',15,5)
-u = filter_row_col(ass_bin,ppg_bin)
-print ass_bin
-for index in u:
-    print all_data['Player'][index]
+all_data = get_all_data('dataclean.csv')
 
-print assists_bin(kobe_data)
-print get_bin_header(0,4,BLK_INTERVAL)
+kobe = get_index(all_data,'Player','Kobe Bryant')
+
         
