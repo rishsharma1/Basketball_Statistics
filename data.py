@@ -123,8 +123,10 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
                 
                 #sum mode
                 if mode == "SUM":
-
-                    tot = sum(map(val_type(needed_data[val][0]),needed_data[val]))
+                    
+                    tot = sum([val_type(item)(item) for item in needed_data[val] if val_type(item) != str])
+                    #tot = sum(map(val_type(needed_data[val][0]),needed_data[val]))
+                    
                     temp_row.append(tot)
                 
                 elif mode == "COUNT":
@@ -137,26 +139,59 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
                     temp_row.append(count_items)    
                 
                 else:
+                    
                     if val in ['WS','eFG%','Age']:
-                        tot = sum(map(val_type(needed_data[val][0]),needed_data[val]))
+                        
+                        tot = sum([val_type(item)(item) for item in needed_data[val] if val_type(item) != str])
                         average = tot/ float(len(needed_data[val]))
+                        
                     
                     else:
-                        average = sum(map(val_type(needed_data[val][0]),needed_data[val]))/float(SEASON_LENGTH)
+                        
+                        if row in ['Season','Tm'] and col in ['Season','Tm']:
+                            average = sum(map(val_type(needed_data[val][0]),
+                            needed_data[val]))/float(SEASON_LENGTH)
+                        else:
+                            average = sum(map(val_type(needed_data[val][0]),
+                            needed_data[val]))/float(sum(map(val_type(needed_data['G'][0]),needed_data['G'])))
                         
                     
                     temp_row.append(average)
+                    
 
             #for blank cell 
             else:
-
+                
                 temp_row.append('null')
-            
+
         pvt_vals.append((count, temp_row))
         count += 1
         
     
     return sort_pvt_vals(pvt_vals)
+
+
+def pvt_table_total(pvt_table,mode):
+    
+                                                                  
+    pvt_table.append((pvt_table[-1][0]+1,[]))
+                          
+                     
+    for index in range(len(pvt_table[0][1])):
+        
+        sum = 0
+        for row in range(len(pvt_table)-1):
+            
+            if type(pvt_table[row][1][index]) != str:
+                sum += pvt_table[row][1][index]
+
+        pvt_table[-1][1].append(sum)                                                              
+                                                              
+    
+    return pvt_table                                                              
+    
+        
+        
 
 def create_filter_dic(atts):
     filter_dic = {}
@@ -183,6 +218,7 @@ def filter_dic(data,index):
 def filter_data_bin(data,filter_by,filter_val):
 
     store = []
+    
 
     for index in range(len(data[filter_by])):
 
@@ -190,8 +226,10 @@ def filter_data_bin(data,filter_by,filter_val):
             
             if filter_by in ['WS','eFG%','Age']:
                 
-                val = val_type(data[filter_by][index])(data[filter_by][index])
-  
+                if val_type(data[filter_by][index]) != str:
+                
+                    val = val_type(data[filter_by][index])(data[filter_by][index])
+                    
             else:
                                    
                 val = float(data[filter_by][index])/int(data['G'][index])
@@ -199,17 +237,13 @@ def filter_data_bin(data,filter_by,filter_val):
         except:
             
             continue
-
+        
         if val >= filter_val[0] and val < filter_val[1]:
                         store.append(index)
 
     return store
 
 
-
-def filter_row_col(row_index,col_index):
-    
-    return list(set.intersection(set(row_index),set(col_index)))
 
 
 def att_intervals():
@@ -234,8 +268,7 @@ def min_max(data,item):
     if item in ['WS','eFG%','Age']:
         return  (min(converted),max(converted))
     else:
-        return (min(converted)/SEASON_LENGTH,max(converted)/SEASON_LENGTH)
-
+        return (min(converted)/float(SEASON_LENGTH),max(converted)/float(SEASON_LENGTH))
 
 def get_bin_header(start,end,interval):
 
@@ -254,7 +287,7 @@ def get_bin_str(header):
 
     for i in range(len(header)):
 
-        bin_str.append(str(header[i][0]) + " to " +str(header[i][1]))
+        bin_str.append(str(header[i][0]) + "-" +str(header[i][1]))
 
     return bin_str
 

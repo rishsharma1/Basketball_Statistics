@@ -123,13 +123,13 @@ def create_table_css(pvt_vals, row_len, col_len):
     
     #max and min of sum or average corresponding to unique_row and unique_col
     table_css_str += '%s'%(sorted([val for i in range(len(pvt_vals)) for val in pvt_vals[i][1] if val >= 0]))
-    minval, maxval = get_outlier_thresholds(sorted([val for i in range(len(pvt_vals)) for val in pvt_vals[i][1] if val >= 0]))
+    minval, maxval = get_outlier_thresholds(sorted([val for i in range(len(pvt_vals)) for val in pvt_vals[i][1] if val >= 0 and type(val) != str]))
 
     #give colours to each cell of the table
     for row_cnt in range(0, row_len+1):
         for col_cnt in range(2, col_len+1+2):
 
-            if row_cnt == 0:
+            if row_cnt == 0 or row_cnt == row_len:
                 table_css_str += 'tr:nth-child(%d) th:nth-child(%d) {\n'%(row_cnt+1, col_cnt-1)
                 table_css_str += '    background: %s;\n'%(HEADER_COLOUR)
                 table_css_str += '}\n'                 
@@ -139,10 +139,12 @@ def create_table_css(pvt_vals, row_len, col_len):
                 table_css_str += '    background: %s;\n'%(HEADER_COLOUR)
                 table_css_str += '}\n'                 
                 continue
+
+                 
             
             pvt_val = pvt_vals[row_cnt-1][1][col_cnt-3]
             if(pvt_val > 0 and pvt_val != 'null'):              
-
+                
                 # adjust outliers to the threshold values
                 if pvt_val < minval:
                     pvt_val = minval
@@ -155,9 +157,10 @@ def create_table_css(pvt_vals, row_len, col_len):
                 table_css_str += '/* min=%f, max = %f, rel_pos=%d */\n'%(minval, maxval, rel_pos)
 
                 if rel_pos >= RED_BOUNDARY:
-                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(RED, SATURATION, MAX_LIGNTNESS-int((rel_pos-RED_BOUNDARY)*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(MAX_LIGNTNESS/2))), OPAQUE)     
+                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(RED, SATURATION, MAX_LIGNTNESS-int((rel_pos-RED_BOUNDARY)*((MAX_LIGNTNESS-                                                      BLUE_BOUNDARY)/float(MAX_LIGNTNESS/2))), OPAQUE)     
                 else:
-                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(BLUE, SATURATION, BLUE_BOUNDARY+int(rel_pos*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(BLUE_BOUNDARY))), OPAQUE) 
+                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(BLUE, SATURATION, 
+                    BLUE_BOUNDARY+int(rel_pos*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(BLUE_BOUNDARY))), OPAQUE) 
                     
                 table_css_str += 'tr:nth-child(%d) td:nth-child(%d) {\n'%(row_cnt, col_cnt-1)
                 table_css_str += '    background: %s;\n'%(colour)

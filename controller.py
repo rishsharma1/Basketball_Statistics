@@ -32,6 +32,7 @@ if prev_page == 'select.html':
         if row in ['Season','Tm']:
             unique_row = data.create_keys(all_data, row)
             unique_row_str = unique_row
+            
         else:
             row_min_max = data.min_max(all_data,row)
             unique_row = data.get_bin_header(row_min_max[0],row_min_max[1],interval[row])
@@ -65,12 +66,15 @@ if prev_page == 'select.html':
     
         
         #get pivot table values
+                                
         pvt_vals = data.get_pvt_vals(all_data, row, col, val, mode, unique_row, unique_col)
-       
+        
+        pvt_vals = data.pvt_table_total(pvt_vals,mode)
         
         
         #get html of the pivot table contents
-
+        unique_row_str.append("Total")
+        
         html_str = view.create_table_str(pvt_vals, unique_row_str)
         #print html_str
         
@@ -78,7 +82,7 @@ if prev_page == 'select.html':
             view.print_table(pvt_vals, row, unique_row_str, unique_col_str, html_str)
     
     except ValueError as val_err:
-
+        
         view.print_error(val_err)
 
 else:
