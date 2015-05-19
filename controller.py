@@ -56,8 +56,10 @@ if prev_page == 'select.html':
         
             elif col == searchby:
                 temp = [item for item in unique_col if item == search]
+                
                 if temp != []:
                     unique_col = temp
+                    unique_col_str = temp
                 else:
                     raise ValueError('No item was found')
     
@@ -69,7 +71,7 @@ if prev_page == 'select.html':
         
         #get html of the pivot table contents
 
-        html_str = data.create_table_str(pvt_vals, unique_row_str)
+        html_str = view.create_table_str(pvt_vals, unique_row_str)
         #print html_str
         
         if(html_str):

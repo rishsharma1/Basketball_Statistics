@@ -13,8 +13,6 @@ STL_INTERVAL = 0.5
 TOV_INTERVAL = 0.5 
 
 
-
-
 #will get all the data that is in 
 #the csv file, some of this data may
 #be used and may not be.
@@ -90,9 +88,12 @@ def sort_pvt_vals(pvt_vals):
 
 #create a table of aggregation values
 def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
+    
+    
 
     #create a list containing values of aggregation corresponding to unique_row and unique_col
     pvt_vals = [] 
+    
     #used for sorting
     count = 0
     
@@ -112,64 +113,50 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
             
             #get a list of values corresponding to row and column
             if col in ['Season','Tm']:
+                
                 needed_data = get_specific_data(row_data,col,col_item)
             else:
-                needed_data = filter_dic(row_data,filter_data_bin(row_data,col,col_item))
-            
-
-            if(needed_data):
                 
+                needed_data = filter_dic(row_data,filter_data_bin(row_data,col,col_item))     
+
+            if(needed_data and len(needed_data[val])>0):
                 
                 #sum mode
                 if mode == "SUM":
 
-                    tot = sum(map(int,needed_data[val]))
+                    tot = sum(map(val_type(needed_data[val][0]),needed_data[val]))
                     temp_row.append(tot)
                 
                 elif mode == "COUNT":
-                    count_items = len(needed_data[val])
+                    
+                    if val in ['Season','Tm']:
+                        count_items = len(list(set(needed_data[val])))
+                    else:    
+                        count_items = len(needed_data[val])
+                        
                     temp_row.append(count_items)    
                 
                 else:
+                    if val in ['WS','eFG%','Age']:
+                        tot = sum(map(val_type(needed_data[val][0]),needed_data[val]))
+                        average = tot/ float(len(needed_data[val]))
                     
-                    tot = sum(map(int,needed_data[val]))
-                    average = int(tot/ float(len(needed_data[val])))
+                    else:
+                        average = sum(map(val_type(needed_data[val][0]),needed_data[val]))/float(SEASON_LENGTH)
+                        
+                    
                     temp_row.append(average)
 
             #for blank cell 
             else:
 
-                temp_row.append(-1)
+                temp_row.append('null')
             
         pvt_vals.append((count, temp_row))
         count += 1
         
-            
-    return sort_pvt_vals(pvt_vals)
-
-#returns string of html coding a pivot table
-def create_table_str(pvt_vals, unique_row):
     
-    table_str = '<tbody>\n'
-
-    for index in range(len(pvt_vals)):
-
-        table_str += '<tr>\n<td>%d</td>\n<td>%s</td>\n'%(pvt_vals[index][0], unique_row[pvt_vals[index][0]])
-
-        for item in pvt_vals[index][1]:
-
-            if(item >= 0):            
-                table_str += '<td>%d</td>\n'%(item)
-            else:
-                table_str += '<td></td>\n'
-
-    table_str += '</tbody>\n'
-  
-    return table_str
-
-
-
-
+    return sort_pvt_vals(pvt_vals)
 
 def create_filter_dic(atts):
     filter_dic = {}
@@ -187,6 +174,7 @@ def filter_dic(data,index):
         for i in range(len(data[key])):
 
             if i in index:
+                
                 filter_dic[key].append(data[key][i])
 
     return filter_dic
@@ -198,12 +186,19 @@ def filter_data_bin(data,filter_by,filter_val):
 
     for index in range(len(data[filter_by])):
 
-        if filter_by in ['WS','eFG%','Age']:
-
-            val = float(data[filter_by][index])
+        try:
+            
+            if filter_by in ['WS','eFG%','Age']:
+                
+                val = val_type(data[filter_by][index])(data[filter_by][index])
   
-        else:
-            val = float(data[filter_by][index])/SEASON_LENGTH
+            else:
+                                   
+                val = float(data[filter_by][index])/int(data['G'][index])
+                
+        except:
+            
+            continue
 
         if val >= filter_val[0] and val < filter_val[1]:
                         store.append(index)
@@ -213,6 +208,7 @@ def filter_data_bin(data,filter_by,filter_val):
 
 
 def filter_row_col(row_index,col_index):
+    
     return list(set.intersection(set(row_index),set(col_index)))
 
 
@@ -232,16 +228,13 @@ def att_intervals():
     return interval
 
 def min_max(data,item):
-    converted = map(float,data[item])
+
+    converted = [val_type(val)(val) for val in data[item] if val_type(val) != str ]
     
     if item in ['WS','eFG%','Age']:
         return  (min(converted),max(converted))
     else:
         return (min(converted)/SEASON_LENGTH,max(converted)/SEASON_LENGTH)
-        
-    
-    
-
 
 
 def get_bin_header(start,end,interval):
@@ -261,10 +254,19 @@ def get_bin_str(header):
 
     for i in range(len(header)):
 
-        bin_str.append(str(header[i][0]) + "to" +str(header[i][1]))
+        bin_str.append(str(header[i][0]) + " to " +str(header[i][1]))
 
     return bin_str
 
+def val_type(val):
+    
+    for i in [int,float]:
+        try:
+            i(val)
+            return i
+        except ValueError:
+            continue
+    return str  
 
 
 

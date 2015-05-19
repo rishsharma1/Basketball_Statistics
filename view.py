@@ -1,6 +1,16 @@
 import math
 import data
 
+HEADER_COLOUR = '#DADADA'    #pivot table header colour
+BLUE = 235
+RED = 0
+SATURATION = 100    #the number of saturation used for hsla function
+OPAQUE = 1.0        #the number of opaqueness used for hsla function
+BLUE_BOUNDARY = 50   #relative percentage of pivot table value below which blue colour is assigned
+RED_BOUNDARY = 51    #relative percentage of pivot table value above which blue colour is assigned
+MAX_LIGNTNESS = 98   #maximum number of lightness argument of hsla function
+
+
 def create_header():
     
     header_str =  'Content-Type: text/html\n\n'
@@ -33,7 +43,7 @@ def create_nav_bar():
     bar_str += '        <ul class="nav navbar-nav navbar-left">\n'
     bar_str += '            <li><a heref="#">Home</a></li>\n'
     bar_str += '            <li><a href="pages/select.html">Select Data</a></li>\n'
-    bar_str += '             <li><a heref="#">About</a></li>\n'
+    bar_str += '             <li><a heref="pages/analysis.html">Analysis</a></li>\n'
     bar_str += '        </ul>\n'
     bar_str += '    </div>\n'
     bar_str += '</div>\n'
@@ -44,12 +54,12 @@ def create_nav_bar():
 #create header of pivot table
 def create_table_header(row, unique_col):
     
-    theader_str = '<thead>\n<tr>\n<th>%s</th>\n<th>%s</th>\n'%('index', row)
+    theader_str = '<thead></th><th></th>'
     
     for col in unique_col:
-        theader_str += '<th>%s</th>\n'%(col)
+        theader_str += '<th>%s</th>'%(col)
     
-    theader_str += '</tr>\n</thead>\n'
+    theader_str += '</tr></thead>'
     return theader_str
 
 # takes a sorted list to create a list containing lower and upper threshold values
@@ -99,31 +109,39 @@ def create_table_css(pvt_vals, row_len, col_len):
     table_css_str += '    border-spacing: 0;\n'
     table_css_str += '}\n'
     table_css_str += 'td, th {\n'
+    table_css_str += '    margin: 0;\n'  
     table_css_str += '    text-align: center;\n'
     table_css_str += '    vertical-align: center;\n'
     table_css_str += '}\n'
-
+    table_css_str += '#t_header {\n'
+    table_css_str += '    margin-bottom:30px;\n'
+    table_css_str += '}\n'
+    table_css_str += '.borderless td, .borderless th {\n'
+    table_css_str += '    border: none;\n'
+    table_css_str += '}\n'
+    
+    
     #max and min of sum or average corresponding to unique_row and unique_col
     table_css_str += '%s'%(sorted([val for i in range(len(pvt_vals)) for val in pvt_vals[i][1] if val >= 0]))
     minval, maxval = get_outlier_thresholds(sorted([val for i in range(len(pvt_vals)) for val in pvt_vals[i][1] if val >= 0]))
 
     #give colours to each cell of the table
     for row_cnt in range(0, row_len+1):
-        for col_cnt in range(1, col_len+1+2):
+        for col_cnt in range(2, col_len+1+2):
 
             if row_cnt == 0:
-                table_css_str += 'tr:nth-child(%d) th:nth-child(%d) {\n'%(row_cnt+1, col_cnt)
-                table_css_str += '    background: %s;\n'%('#F9F9F9')
+                table_css_str += 'tr:nth-child(%d) th:nth-child(%d) {\n'%(row_cnt+1, col_cnt-1)
+                table_css_str += '    background: %s;\n'%(HEADER_COLOUR)
                 table_css_str += '}\n'                 
                 continue
-            elif col_cnt == 1 or col_cnt == 2:
-                table_css_str += 'tr:nth-child(%d) td:nth-child(%d) {\n'%(row_cnt, col_cnt)
-                table_css_str += '    background: %s;\n'%('#FFFFFF')
+            elif col_cnt == 2:
+                table_css_str += 'tr:nth-child(%d) th:nth-child(%d) {\n'%(row_cnt, col_cnt-1)
+                table_css_str += '    background: %s;\n'%(HEADER_COLOUR)
                 table_css_str += '}\n'                 
                 continue
             
             pvt_val = pvt_vals[row_cnt-1][1][col_cnt-3]
-            if(pvt_val > 0):              
+            if(pvt_val > 0 and pvt_val != 'null'):              
 
                 # adjust outliers to the threshold values
                 if pvt_val < minval:
@@ -135,20 +153,19 @@ def create_table_css(pvt_vals, row_len, col_len):
                 
                 rel_pos = int(abs(math.ceil((((pvt_val - minval) / float(maxval - minval)) * 100))))
                 table_css_str += '/* min=%f, max = %f, rel_pos=%d */\n'%(minval, maxval, rel_pos)
-                if rel_pos >= 51:
-                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(235, 100, 98-int((rel_pos-51)*(45/float(49))), 0.8)    
-                    
+
+                if rel_pos >= RED_BOUNDARY:
+                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(RED, SATURATION, MAX_LIGNTNESS-int((rel_pos-RED_BOUNDARY)*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(MAX_LIGNTNESS/2))), OPAQUE)     
                 else:
-                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(0, 100, 50+int(rel_pos*(48/float(50))), 0.8)    
-    
+                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(BLUE, SATURATION, BLUE_BOUNDARY+int(rel_pos*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(BLUE_BOUNDARY))), OPAQUE) 
                     
-                table_css_str += 'tr:nth-child(%d) td:nth-child(%d) {\n'%(row_cnt, col_cnt)
+                table_css_str += 'tr:nth-child(%d) td:nth-child(%d) {\n'%(row_cnt, col_cnt-1)
                 table_css_str += '    background: %s;\n'%(colour)
                 table_css_str += '}\n'                 
 
             else:
                 
-                table_css_str += 'tr:nth-child(%d) td:nth-child(%d) {\n'%(row_cnt, col_cnt)
+                table_css_str += 'tr:nth-child(%d) td:nth-child(%d) {\n'%(row_cnt, col_cnt-1)
                 table_css_str += '    background: %s;\n'%('#FFFFFF')
                 table_css_str += '}\n'                 
 
@@ -160,17 +177,45 @@ def create_table_css(pvt_vals, row_len, col_len):
 
     return '<link rel="stylesheet" type="text/css" href="pvt_style.css">\n'
 
+#returns string of html coding a pivot table
+def create_table_str(pvt_vals, unique_row):
+    
+    table_str = '<tbody>\n'
+
+    for index in range(len(pvt_vals)):
+
+        table_str += '<tr><th>%s</th>'%( unique_row[pvt_vals[index][0]])
+
+        for item in pvt_vals[index][1]:
+
+            if(item >= 0):
+                if item == 'null' :
+                    table_str += '<td></td>\n'
+                elif item.__class__.__name__ == 'int':              
+                    table_str += '<td>%d</td>\n'%(item)
+                else:
+                    table_str += '<td>%s</td>\n'%("{0:.2f}".format(item))                                                 
+            else:
+                table_str += '<td></td>\n'
+                
+    
+
+    table_str += '</tbody>\n'
+
+    return table_str
+
 def print_table(pvt_vals, row, unique_row, unique_col, table_str):
     output = create_header()
+    
     output += create_table_css(pvt_vals, len(unique_row), len(unique_col))
     output += '</head>\n'    
     output += create_nav_bar()
 
     #add styling here
     output += '<div class="container">\n'
-    output += '<div class="page-header"><h2>Pivot Table</h2></div>\n'
+    output += '<div id="t_header" ><h2>Pivot Table</h2></div>\n'
     output += '<div class="table-responsive">\n'
-    output += '<table class="table table-bordered table-hover">\n'
+    output += '<table class="table table-borderless table-hover">\n'
     output += create_table_header(row, unique_col)
     output += table_str
     output += '</table>\n</div>\n</div>\n</body>\n</html>\n'
