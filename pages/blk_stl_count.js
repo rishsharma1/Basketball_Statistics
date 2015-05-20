@@ -10,7 +10,7 @@ $(function () {
                 plotShadow: false
             },
             title: {
-                text: 'Count of High Performers in Passing From 1999-2007'
+                text: 'Count of High Performers in Defence From 1999-2007'
             },
             plotOptions: {
                 pie: {
@@ -25,7 +25,7 @@ $(function () {
             series: [{
                 type: 'pie',
                 name: 'Count',
-                data: [['New Seasons', 15], ['Old Seasons', 22]]
+                data: [['Old Seasons', 506], ['New Seasons', 451]]
             }]
         });
     });
