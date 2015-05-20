@@ -11,38 +11,44 @@ ${demo.css}
         </style>
         <script type="text/javascript">
 $(function () {
-    $('#container').highcharts({
-        chart: {
-            type: 'line'
-        },
-        title: {
-            text: 'Average Player APG From 1999-2007'
-        },
-        subtitle: {
-            text: 'www.basketball-reference.com/'
-        },
-        xAxis: {
-            categories: ['1999-00', '2000-01', '2001-02', '2002-03', '2003-04', '2004-05', '2005-06', '2006-07']
-        },
-        yAxis: {
+
+    $(document).ready(function () {
+
+        // Build the chart
+        $('#container').highcharts({
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false
+            },
             title: {
-                text: 'APG'
-            }
-        },
-        plotOptions: {
-            line: {
-                dataLabels: {
-                    enabled: true
-                },
-                enableMouseTracking: false
-            }
-        },
-        series: [{
-            name: 'Season',
-            data: [1.5445615932233938, 1.4902863946857179, 1.4536284251731406, 1.4741233336412056, 1.4461609559648776, 1.4058527663465934, 1.4143234143234142, 1.3957811735589514]
-       
-        }]
+                text: 'Browser market shares at a specific website, 2014'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: false
+                    },
+                    showInLegend: true
+                }
+            },
+            series: [{
+                type: 'pie',
+                name: 'Browser share',
+                data: [
+                    ['Firefox',   45.0],
+                    ['IE',       26.8],
+                    ['Chrome', 12.8],
+                    ['Safari',    8.5],
+                    ['Opera',     6.2],
+                    ['Others',   0.7]
+                ]
+            }]
+        });
     });
+
 });    </script>
     </head>
     <body>
