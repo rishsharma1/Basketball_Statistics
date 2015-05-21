@@ -61,7 +61,7 @@ def pie_chart(data_vals,txt,id):
     $().ready(function () {
 
         // Build the chart
-        $('#id').highcharts({
+        $('#%s').highcharts({
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -88,7 +88,7 @@ def pie_chart(data_vals,txt,id):
         });
     });
 
-    });"""%(txt,data_vals)
+    });"""%(id,txt,data_vals)
 
     return graph_str
 
@@ -250,10 +250,13 @@ def print_graph():
             
             season_data = data.get_specific_data(all_data,'Season',season)
             season_points = sum(map(int,season_data['PTS']))/float(data.SEASON_LENGTH*len(set(season_data['Tm'])))
+
             assists = map(int,season_data['AST'])
             tov = data.filter_data_bin(season_data,'TOV',(0,2))
+        
             stl = data.filter_data_bin(season_data,'STL',(1,3))
             blk = data.filter_data_bin(season_data,'BLK',(1,3))
+        
             ast = data.filter_data_bin(season_data,'AST',(5,11))
             inter_tov_ast = set(tov).intersection(ast)
             union_def = set(blk).union(stl)
@@ -262,12 +265,12 @@ def print_graph():
             data_vals.append(round(avg,2))
             
             if number < 4:
-                #avg_season.append((COLOUR_SEASON[0],[]))
+               
                 avg_season_pts.append((round(season_points,2), SEASON_COLOUR[0],season))
                 old_season += len(inter_tov_ast)
                 old_def += len(union_def)
             else:
-                #avg_season.append((COLOUR_SEASON[0],[]
+                
                 avg_season_pts.append((round(season_points,2), SEASON_COLOUR[1],season))
                 new_season += len(inter_tov_ast)
                 new_def += len(union_def)
@@ -284,14 +287,19 @@ def print_graph():
                 
         
         count_tov_ast = sorted(count_tov_ast, key=lambda x:x[1])
-        open('assists.js','w').write(create_line(data_vals,header))
-        open('points.js','w').write(pie_chart(count_tov_ast,'Count of High Performers in Passing From 1999-2007'))
+        assists = open('assists.js','w').write(create_line(data_vals,header))
+        assists.close()
+        passing = open('points.js','w').write(pie_chart(count_tov_ast,'Count of High Performers in Passing From 1999-2007','points_graph'))
+        passing.close()
         
         sort_list = sorted(avg_season_pts, key= lambda x:x[0])
         new_header = [x[2] for x in sort_list]
-        open('avg_tm_points.js','w').write(create_bar(sort_list,new_header,'Average PPG of Teams From 1999-2007','Average PPG'))
-        open('blk_stl_count.js','w').write(pie_chart(count_def,'Count of High Performers in Defence From 1999-2007'))        
-                                                                                                          
+        
+        tm_points = open('avg_tm_points.js','w').write(create_bar(sort_list,new_header,'Average PPG of Teams From 1999-2007','Average PPG'))
+        tm_points.close()
+        
+        def_count = open('blk_stl_count.js','w').write(pie_chart(count_def,'Count of High Performers in Defence From 1999-2007','stl_blk_graph'))        
+        def_count.close()                                                                                                  
         
 
 print_graph()

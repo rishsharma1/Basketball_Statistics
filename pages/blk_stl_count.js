@@ -3,7 +3,7 @@ $(function () {
     $().ready(function () {
 
         // Build the chart
-        $('#points_graph').highcharts({
+        $('#stl_blk_graph').highcharts({
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
