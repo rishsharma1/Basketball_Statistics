@@ -167,7 +167,6 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
         pvt_vals.append((count, temp_row))
         count += 1
         
-    
     return sort_pvt_vals(pvt_vals)
 
 

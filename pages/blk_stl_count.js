@@ -25,7 +25,7 @@ $(function () {
             series: [{
                 type: 'pie',
                 name: 'Count',
-                data: [['Old Seasons', 506], ['New Seasons', 451]]
+                data: [['Old Seasons', 512], ['New Seasons', 452]]
             }]
         });
     });

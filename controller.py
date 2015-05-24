@@ -52,6 +52,7 @@ if prev_page == 'select.html':
                 temp = [item for item in unique_row if item == search]
                 if temp != []:
                     unique_row = temp
+                    unique_row_str = temp
                 else:
                     raise ValueError('No item was found')
         

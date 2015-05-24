@@ -1,28 +1,28 @@
 $(function () {
-    $('#bar_graph').highcharts({
+    $('#def_graph').highcharts({
         chart: {
             type: 'column'
         },
         title: {
-            text: 'Average PPG of Teams From 1999-2007'
+            text: 'Average DPG of Teams From 1999-2007'
         },
         subtitle: {
             text: 'www.basketball-reference.com/'
         },
         xAxis: {
-            categories: ['1999-00', '2006-07', '2002-03', '2001-02', '2005-06', '2000-01', '2004-05', '2003-04'],
+            categories: ['1999-00', '2002-03', '2001-02', '2000-01', '2003-04', '2006-07', '2004-05', '2005-06'],
             crosshair: true
         },
         yAxis: {
-            min: 82,
+            min: 11,
             title: {
-                text: 'Average PPG'
+                text: 'Average DPG'
             }
         },
         tooltip: {
             headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
             pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                '<td style="padding:0"><b>{point.y:.1f} Average PPG</b></td></tr>',
+                '<td style="padding:0"><b>{point.y:.1f} Average DPG</b></td></tr>',
             footerFormat: '</table>',
             shared: true,
             useHTML: true
@@ -35,7 +35,7 @@ $(function () {
         },
         series: [{
             name: 'Old Seasons',
-            data:[ {y : 95.01, color: 'rgb(124,181,236)'},{y : 94.4, color: 'rgb(67,67,72)'},{y : 90.86, color: 'rgb(124,181,236)'},{y : 90.56, color: 'rgb(124,181,236)'},{y : 90.25, color: 'rgb(67,67,72)'},{y : 88.96, color: 'rgb(124,181,236)'},{y : 87.86, color: 'rgb(67,67,72)'},{y : 82.39, color: 'rgb(67,67,72)'}]
+            data:[ {y : 12.82, color: 'rgb(124,181,236)'},{y : 12.5, color: 'rgb(124,181,236)'},{y : 12.39, color: 'rgb(124,181,236)'},{y : 12.17, color: 'rgb(124,181,236)'},{y : 11.4, color: 'rgb(67,67,72)'},{y : 11.39, color: 'rgb(67,67,72)'},{y : 11.25, color: 'rgb(67,67,72)'},{y : 11.16, color: 'rgb(67,67,72)'}]
                 
                 }, {name: 'New Seasons',
                     data: []

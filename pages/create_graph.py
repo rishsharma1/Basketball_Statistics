@@ -5,7 +5,8 @@ import data
 
 SOURCE = "www.basketball-reference.com/"
 #first colour represents older seasons,
-SEASON_COLOUR = ['rgb(0, 51, 153)','rgb(255, 0, 0)']
+SEASON_COLOUR = ['rgb(124,181,236)','rgb(67,67,72)']
+SEASON_COLOUR_TRAN = ['rgba(124,181,236,0.5)','rgba(67,67,72,0.5)']
 def create_line(data_vals,header):
     
     title = "Average Player APG From 1999-2007"
@@ -54,7 +55,7 @@ def create_line(data_vals,header):
     return graph_str
 
 
-def pie_chart(data_vals,txt,id):
+def pie_chart(data_vals,txt,mode,id):
 
     graph_str = """$(function () {
 
@@ -82,22 +83,22 @@ def pie_chart(data_vals,txt,id):
             },
             series: [{
                 type: 'pie',
-                name: 'Count',
+                name: '%s',
                 data: %s
             }]
         });
     });
 
-    });"""%(id,txt,data_vals)
+    });"""%(id,txt,mode,data_vals)
 
     return graph_str
 
 
 
-def create_scatter(data_vals,x,y,text):
+def create_scatter(data_vals,x,y,text,id):
     
     graph_str = """$(function () {
-    $('#scattter_graph').highcharts({
+    $('#%s').highcharts({
         chart: {
             type: 'scatter',
             zoomType: 'xy'
@@ -125,7 +126,7 @@ def create_scatter(data_vals,x,y,text):
         plotOptions: {
             scatter: {
                 marker: {
-                    radius: 2,
+                    radius: 5,
                     states: {
                         hover: {
                             enabled: true,
@@ -145,16 +146,18 @@ def create_scatter(data_vals,x,y,text):
                     pointFormat: '{point.x} %s, {point.y} %s'
                 }
             }
-        },"""%(text,SOURCE,x,y,x,y)
+        },"""%(id,text,SOURCE,x,y,x,y)
         
     graph_str += "series: ["
     
-    for (number, key) in enumerate(data_vals.keys()):
+    for (number, key) in enumerate(sorted(data_vals.keys())):
+        
+        
         
         if number < 4:
-            colour = SEASON_COLOUR[0]
+            colour = SEASON_COLOUR_TRAN[0]
         else:
-            colour = SEASON_COLOUR[1]
+            colour = SEASON_COLOUR_TRAN[1]
             
         graph_str += """{name: '%s',
                             color: '%s',
@@ -172,10 +175,10 @@ def create_scatter(data_vals,x,y,text):
     return graph_str
 
 
-def create_bar(data_vals,header,text,value):
+def create_bar(data_vals,header,text,value,id,min):
     
     graph_str = """$(function () {
-    $('#bar_graph').highcharts({
+    $('#%s').highcharts({
         chart: {
             type: 'column'
         },
@@ -190,7 +193,7 @@ def create_bar(data_vals,header,text,value):
             crosshair: true
         },
         yAxis: {
-            min: 0,
+            min: %d,
             title: {
                 text: '%s'
             }
@@ -210,8 +213,8 @@ def create_bar(data_vals,header,text,value):
             }
         },
         series: [{
-            name: '%s',
-            data:[ """%(text,SOURCE,header,value,value,value)
+            name: 'Old Seasons',
+            data:[ """%(id,text,SOURCE,header,min,value,value)
     for i in range(len(data_vals)):
         
         
@@ -220,8 +223,11 @@ def create_bar(data_vals,header,text,value):
             graph_str += ","
             
     graph_str += """]
-                }]
-             });
+                
+                }, {name: 'New Seasons',
+                    data: []
+                }]"""
+    graph_str += """});
           });"""
     
      
@@ -235,9 +241,11 @@ def print_graph():
         all_data = data.get_all_data('../dataclean.csv')
         header = sorted(list(set(all_data['Season'])))
         avg_season_pts = []
+        avg_season_def = []
         data_vals = []
         count_tov_ast = []
         count_def = []
+
         old_season = 0
         new_season = 0
         old_def = 0
@@ -247,35 +255,44 @@ def print_graph():
             
             
             
-            
+
             season_data = data.get_specific_data(all_data,'Season',season)
             season_points = sum(map(int,season_data['PTS']))/float(data.SEASON_LENGTH*len(set(season_data['Tm'])))
 
             assists = map(int,season_data['AST'])
+            season_stl = sum(map(int,season_data['STL']))/float(data.SEASON_LENGTH*len(set(season_data['Tm'])))
+            season_blk = sum(map(int,season_data['BLK']))/float(data.SEASON_LENGTH*len(set(season_data['Tm'])))
+            season_def = season_stl+season_blk
+        
             tov = data.filter_data_bin(season_data,'TOV',(0,2))
         
-            stl = data.filter_data_bin(season_data,'STL',(1,3))
-            blk = data.filter_data_bin(season_data,'BLK',(1,3))
+            stl = data.filter_data_bin(season_data,'STL',(1,10))
+            blk = data.filter_data_bin(season_data,'BLK',(1,10))
         
             ast = data.filter_data_bin(season_data,'AST',(5,11))
             inter_tov_ast = set(tov).intersection(ast)
-            union_def = set(blk).union(stl)
+            union_def = list(set(blk).union(stl))
             
+        
             avg = sum(assists)/(float(data.SEASON_LENGTH)*len(assists))
             data_vals.append(round(avg,2))
+        
             
             if number < 4:
                
                 avg_season_pts.append((round(season_points,2), SEASON_COLOUR[0],season))
+                avg_season_def.append((round(season_def,2),SEASON_COLOUR[0],season))
                 old_season += len(inter_tov_ast)
                 old_def += len(union_def)
             else:
                 
                 avg_season_pts.append((round(season_points,2), SEASON_COLOUR[1],season))
+                avg_season_def.append((round(season_def,2),SEASON_COLOUR[1],season))
+                
                 new_season += len(inter_tov_ast)
                 new_def += len(union_def)
 
-        
+            
 
             
 
@@ -286,20 +303,41 @@ def print_graph():
         
                 
         
-        count_tov_ast = sorted(count_tov_ast, key=lambda x:x[1])
-        assists = open('assists.js','w').write(create_line(data_vals,header))
+        #count_tov_ast = sorted(count_tov_ast, key=lambda x:x[1])
+        assists = open('assists.js','w')
+        assists.write(create_line(data_vals,header))
         assists.close()
-        passing = open('points.js','w').write(pie_chart(count_tov_ast,'Count of High Performers in Passing From 1999-2007','points_graph'))
+        
+        passing = open('points.js','w')
+        passing.write(pie_chart(count_tov_ast,
+        'Count of High Performers in Passing From 1999-2007','Count','points_graph'))
+        
         passing.close()
         
-        sort_list = sorted(avg_season_pts, key= lambda x:x[0])
-        new_header = [x[2] for x in sort_list]
+        sort_list = sorted(avg_season_pts,reverse=True, key= lambda x:x[0])
         
-        tm_points = open('avg_tm_points.js','w').write(create_bar(sort_list,new_header,'Average PPG of Teams From 1999-2007','Average PPG'))
+        sort_list_def = sorted(avg_season_def,reverse=True,key = lambda x:x[0])
+        
+        new_header = [x[2] for x in sort_list]
+        new_header_def = [x[2] for x in sort_list_def]
+        
+        tm_points = open('avg_tm_points.js','w')
+        tm_points.write(create_bar(sort_list,new_header,
+        'Average PPG of Teams From 1999-2007','Average PPG','bar_graph',sort_list[-1][0]))
+        
         tm_points.close()
         
-        def_count = open('blk_stl_count.js','w').write(pie_chart(count_def,'Count of High Performers in Defence From 1999-2007','stl_blk_graph'))        
-        def_count.close()                                                                                                  
+        
+        def_count = open('blk_stl_count.js','w')
+        def_count.write(pie_chart(count_def,
+        'Count of High Performers in Defence From 1999-2007','Count','stl_blk_graph'))
+        
+        def_count.close()
+        
+        team_def = open('team_def.js','w')
+        team_def.write(create_bar(sort_list_def,new_header_def,
+        'Average DPG of Teams From 1999-2007','Average DPG','def_graph',sort_list_def[-1][0]))
+                          
         
 
 print_graph()

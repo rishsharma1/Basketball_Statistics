@@ -2,8 +2,9 @@ import math
 import data
 
 HEADER_COLOUR = '#DADADA'    #pivot table header colour
-BLUE = 235
+BLUE = 206
 RED = 0
+WHITE = '#FFFFFF'
 SATURATION = 100    #the number of saturation used for hsla function
 OPAQUE = 1.0        #the number of opaqueness used for hsla function
 BLUE_BOUNDARY = 50   #relative percentage of pivot table value below which blue colour is assigned
@@ -41,9 +42,9 @@ def create_nav_bar():
     bar_str += '    </button>\n'
     bar_str += '    <div class="collapse navbar-collapse navHeaderCollapse">\n'
     bar_str += '        <ul class="nav navbar-nav navbar-left">\n'
-    bar_str += '            <li><a heref="#">Home</a></li>\n'
+    bar_str += '            <li><a href="#">Home</a></li>\n'
     bar_str += '            <li><a href="pages/select.html">Select Data</a></li>\n'
-    bar_str += '             <li><a heref="pages/analysis.html">Analysis</a></li>\n'
+    bar_str += '             <li><a href="pages/analysis.html">Analysis</a></li>\n'
     bar_str += '        </ul>\n'
     bar_str += '    </div>\n'
     bar_str += '</div>\n'
@@ -152,15 +153,17 @@ def create_table_css(pvt_vals, row_len, col_len):
                     pvt_val = maxval
                     
                 #pick a color by calculating the relative position of the cell value using hsl
-                
-                rel_pos = int(abs(math.ceil((((pvt_val - minval) / float(maxval - minval)) * 100))))
-                table_css_str += '/* min=%f, max = %f, rel_pos=%d */\n'%(minval, maxval, rel_pos)
+                if maxval == minval:
+                    colour = WHITE
+                else :
+                    rel_pos = int(abs(math.ceil((((pvt_val - minval) / float(maxval - minval)) * 100))))
+                    table_css_str += '/* min=%f, max = %f, rel_pos=%d */\n'%(minval, maxval, rel_pos)
 
-                if rel_pos >= RED_BOUNDARY:
-                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(RED, SATURATION, MAX_LIGNTNESS-int((rel_pos-RED_BOUNDARY)*((MAX_LIGNTNESS-                                                      BLUE_BOUNDARY)/float(MAX_LIGNTNESS/2))), OPAQUE)     
-                else:
-                    colour = 'hsla(%d,%d%%,%d%%,%f)'%(BLUE, SATURATION, 
-                    BLUE_BOUNDARY+int(rel_pos*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(BLUE_BOUNDARY))), OPAQUE) 
+                    if rel_pos >= RED_BOUNDARY:
+                        colour = 'hsla(%d,%d%%,%d%%,%f)'%(RED, SATURATION, MAX_LIGNTNESS-int((rel_pos-RED_BOUNDARY)*((MAX_LIGNTNESS-                                                      BLUE_BOUNDARY)/float(MAX_LIGNTNESS/2))), OPAQUE)     
+                    else:
+                        colour = 'hsla(%d,%d%%,%d%%,%f)'%(BLUE, SATURATION, 
+                        BLUE_BOUNDARY+int(rel_pos*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(BLUE_BOUNDARY))), OPAQUE) 
                     
                 table_css_str += 'tr:nth-child(%d) td:nth-child(%d) {\n'%(row_cnt, col_cnt-1)
                 table_css_str += '    background: %s;\n'%(colour)
