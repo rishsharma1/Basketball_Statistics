@@ -10,7 +10,7 @@ $(function () {
             text: 'www.basketball-reference.com/'
         },
         xAxis: {
-            categories: ['1999-00', '2002-03', '2001-02', '2000-01', '2003-04', '2006-07', '2004-05', '2005-06'],
+            categories: ['1999-00', '2000-01', '2001-02', '2002-03', '2003-04', '2004-05', '2005-06', '2006-07'],
             crosshair: true
         },
         yAxis: {
@@ -35,7 +35,7 @@ $(function () {
         },
         series: [{
             name: 'Old Seasons',
-            data:[ {y : 12.82, color: 'rgb(124,181,236)'},{y : 12.5, color: 'rgb(124,181,236)'},{y : 12.39, color: 'rgb(124,181,236)'},{y : 12.17, color: 'rgb(124,181,236)'},{y : 11.4, color: 'rgb(67,67,72)'},{y : 11.39, color: 'rgb(67,67,72)'},{y : 11.25, color: 'rgb(67,67,72)'},{y : 11.16, color: 'rgb(67,67,72)'}]
+            data:[ {y : 12.82, color: 'rgb(124,181,236)'},{y : 12.17, color: 'rgb(124,181,236)'},{y : 12.39, color: 'rgb(124,181,236)'},{y : 12.5, color: 'rgb(124,181,236)'},{y : 11.4, color: 'rgb(67,67,72)'},{y : 11.25, color: 'rgb(67,67,72)'},{y : 11.16, color: 'rgb(67,67,72)'},{y : 11.39, color: 'rgb(67,67,72)'}]
                 
                 }, {name: 'New Seasons',
                     data: []
