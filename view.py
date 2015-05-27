@@ -230,7 +230,7 @@ def create_table_css(pvt_vals, row_len, col_len):
                         colour = 'hsla(%d,%d%%,%d%%,%f)'\
                             %(BLUE, SATURATION, BLUE_BOUNDARY+int(rel_pos*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(BLUE_BOUNDARY))), OPAQUE) 
 
-                table_css_str += get_nth_child(TD, row_cnt, col_cnt, colour)
+                table_css_str += get_nth_child(TD, row_cnt-1, col_cnt, colour)
                 
             #if table cell is blank, apply "blank colour" to the cell    
             else:
