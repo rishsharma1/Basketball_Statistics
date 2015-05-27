@@ -1,10 +1,6 @@
 Basketball Website
 
-Group Members:
-    
-    Rishabh Sharma,694739
-    Masaki Goto,735519
-    Huy Nguyen, 469380
+
     
 
 Steps to use application:
