@@ -2,9 +2,9 @@ Basketball Website
 
 Group Members:
     
-    Rishabh Sharma,694739
-    Masaki Goto,735519
-    Huy Nguyen, 469380
+    Rishabh Sharma
+    Masaki Goto
+    Huy Nguyen
 
 Header Image Reference: http://www.freewebheaders.com/sport/basketball-headers/
 Presentation Link : http://prezi.com/hvzjscrrchcp/?utm_campaign=share&utm_medium=copy&rc=ex0share
