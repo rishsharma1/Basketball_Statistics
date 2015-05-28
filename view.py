@@ -1,5 +1,5 @@
 import math
-import data
+
 
 HEADER_COLOUR = 'hsla(360,0%,50%,0.2)'    #pivot table header colour
 BLANK_COLOUR = 'hsla(360,0%,95%,0.4)'     #colour for blank cells
@@ -15,6 +15,8 @@ RED_BOUNDARY = 51     #relative percentage of pivot table value above which blue
 MAX_LIGNTNESS = 98    #maximum number of lightness argument of hsla function
 ROW_HEADER_LEN = 1    #the length the row header occupies rows of the pivot table
 COL_HEADER_LEN = 1    #the length the column header occupies columns of the pivot table
+MAX = 100             #used for the legend
+INCREMENTS = 10       #used for the legend 
 
 PIVOT_CSS = 'pages/css/pvt_style.css'
 
@@ -31,9 +33,7 @@ KEYWORD_DICT = {
 "TOV":"Turnovers (Bin)",
 "AVE":"Average of",
 "SUM":"Sum of",
-"COUNT":"Count of",
-"MAX":"Max of",
-"MIN":"Min of"
+"COUNT":"Count of"
 }
 
 
@@ -62,7 +62,7 @@ def create_nav_bar():
     bar_str =  '<body>\n'
     bar_str += '<div class="navbar navbar-inverse navbar-static-top">\n'
     bar_str += '<div class="container">\n'
-    bar_str += '    <a href="#"class="navbar-brand">Basketball</a>\n'
+    bar_str += '    <a href="pages/home.html"class="navbar-brand">Basketball</a>\n'
     bar_str += '    <button class ="navbar-toggle" data-toggle ="collapse" data-target =".navHeaderCollapse">\n'
     bar_str += '        <span class = "icon-bar"></span>\n'
     bar_str += '        <span class = "icon-bar"></span>\n'
@@ -70,7 +70,7 @@ def create_nav_bar():
     bar_str += '    </button>\n'
     bar_str += '    <div class="collapse navbar-collapse navHeaderCollapse">\n'
     bar_str += '        <ul class="nav navbar-nav navbar-left">\n'
-    bar_str += '            <li><a href="#">Home</a></li>\n'
+    bar_str += '            <li><a href="pages/home.html">Home</a></li>\n'
     bar_str += '            <li><a href="pages/select.html">Select Data</a></li>\n'
     bar_str += '             <li><a href="pages/analysis.html">Analysis</a></li>\n'
     bar_str += '        </ul>\n'
@@ -199,6 +199,7 @@ def create_table_css(pvt_vals, row_len, col_len):
                 
     #apply colours to table contents
     for row_cnt in range(ROW_HEADER_LEN+1, row_len+ROW_HEADER_LEN+1):
+        
         for col_cnt in range(COL_HEADER_LEN+1, col_len+COL_HEADER_LEN+1):  
             
             #get the value of each table cell
@@ -305,7 +306,9 @@ def print_table(pvt_vals,title_str, row, unique_row, unique_col, table_str):
     output += '<table id="pTable" class="table table-borderless table-hover">\n'
     output += create_table_header(row, unique_col)
     output += table_str
-    output += '</table>\n</div>\n</div>\n</body>\n</html>\n'
+    output += '</table>\n</div>\n</div>\n'
+    output += create_legend()
+    output += '</body>\n</html>\n'
     
     print output
     
@@ -326,24 +329,42 @@ def print_error(err_msg):
 
     print output
     
+#this creates the legend for the pivot table 
+def create_legend():
+    
+    output ='<br/><br/><div class="container"><h4>Colour Legend</h4><div class="table-responsive">\n'
+    output += '<table class="table table-borderless table-hover">\n'
+    output += '<tr style="height:10px">'
+
+    #lets do red first since it represents max
+    for i in range(RED_BOUNDARY,MAX+1,INCREMENTS):
+        output += '<td style="background-color: hsla(%d,%d%%,%d%%,%f)"></td>'%(RED,SATURATION,i,OPAQUE)
+    #now lets do blue second since it represents min 
+    for i in range(BLUE_BOUNDARY,MAX+1,INCREMENTS)[::-1]:
+        output += '<td style="background-color: hsla(%d,%d%%,%d%%,%f)"></td>'%(BLUE,SATURATION,i,OPAQUE)
+        
     
     
+    output += '</tr><tr><td colspan="6">(Max)</td>'
+    output += '<td colspan="6" style="text-align:right">(Min)</td></tr></table></div></div>'
+    return output 
 
 #prints html page that will redirect to select.html
-def print_select():
+def print_home():
 
     select_str =  'Content-Type: text/html\n\n'
     select_str += '<!DOCTYPE html>\n'
     select_str +=  '<html>\n'
     select_str += '<head>\n'
-    select_str += '<meta http-equiv="refresh" content="0; url=pages/select.html"/>\n'
+    select_str += '<meta http-equiv="refresh" content="0; url=pages/home.html"/>\n'
     select_str += '</head>\n'
     select_str += '</html>\n'
 
     print select_str
     
 
-
+#this function takes the short form, or
+#the form the csv file and translates into full form
 def translate(keyword):
     if keyword in KEYWORD_DICT.keys():
         return KEYWORD_DICT[keyword]
@@ -352,7 +373,9 @@ def translate(keyword):
     
     
 
-
+#this creates the title depending on the row,col, mode
+#and the search, title appears different for bin categories
+#and different for search options
 def create_title(row, col, val, mode, searchby, search):
     row = translate(row)
     col = translate(col)
@@ -366,7 +389,8 @@ def create_title(row, col, val, mode, searchby, search):
         col += ' (%s)'%(search)
     
     
-    title_str = '<div class="page-header"><h2>{} {} By {} and {}</h2></div>\n'.format(mode, val, row, col)
+    title_str = """<div class="page-header"><h2 class="text-muted" 
+    style="text-align:center">%s %s By %s and %s</h2></div><br/><br/>\n"""%(mode, val, row, col)
 
     return title_str
 

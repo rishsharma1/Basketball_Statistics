@@ -1,6 +1,8 @@
 import sys
 sys.path.insert(0,'../')
-import data
+import model
+
+
 #--------------------CONSTANTS------------------------#
 
 SOURCE = "www.basketball-reference.com/"
@@ -74,13 +76,17 @@ def create_line(data_vals,header,txt,title,id):
                 }
             },
     
-            series: [{
-                name: 'Season',
-                    data: %s
+            series: [
+                {name: 'Season',
+                    data: %s},
+                {name:  'Seasons Divider',
+                    data: [],
+                    color: '%s'
+                }
        
-                }]
+                ]
             });
-        });"""%(id,title,SOURCE,SEASON_SEPARATOR,header,txt,data_vals)
+        });"""%(id,title,SOURCE,SEASON_SEPARATOR,header,txt,data_vals,SEASON_SEPARATOR)
     
     return graph_str
 
@@ -197,7 +203,7 @@ def create_bar(data_vals,header,text,value,id,min):
 def main():
     
         #get all the data     
-        all_data = data.get_all_data('../dataclean.csv')
+        all_data = model.get_all_data('../'+model.DATA_FILE)
     
         #season header 1999-2007
         header = sorted(list(set(all_data['Season'])))
@@ -218,33 +224,33 @@ def main():
             
             
             #get season data 
-            season_data = data.get_specific_data(all_data,'Season',season)
+            season_data = model.get_specific_data(all_data,'Season',season)
         
-            #get points per game of a team from the current season
-            season_points = sum(map(int,season_data['PTS']))/float(data.SEASON_LENGTH*len(set(season_data['Tm'])))
+            #get avg points per game of a team from the current season
+            season_points = sum(map(int,season_data['PTS']))/float(model.SEASON_LENGTH*len(set(season_data['Tm'])))
             
             #get all assists from current season 
             assists = map(int,season_data['AST'])
             
-            #get steals per game of a team from current season  
-            season_stl = sum(map(int,season_data['STL']))/float(data.SEASON_LENGTH*len(set(season_data['Tm'])))
-            #get blocks per game of a team from current season
-            season_blk = sum(map(int,season_data['BLK']))/float(data.SEASON_LENGTH*len(set(season_data['Tm'])))
+            #get avg steals per game of a team from current season  
+            season_stl = sum(map(int,season_data['STL']))/float(model.SEASON_LENGTH*len(set(season_data['Tm'])))
+            #get avg blocks per game of a team from current season
+            season_blk = sum(map(int,season_data['BLK']))/float(model.SEASON_LENGTH*len(set(season_data['Tm'])))
         
             #the defence accumualtion 
             season_def = season_stl+season_blk
             
             #find the players that have a turnover avg in the range of LOW_TURNOVER
-            tov = data.filter_data_bin(season_data,'TOV',LOW_TURNOVER)
+            tov = model.filter_data_bin(season_data,'TOV',LOW_TURNOVER)
         
             #find the players that have a stl avg in the range of BLK_STL_MIN_MAX
-            stl = data.filter_data_bin(season_data,'STL',BLK_STL_MIN_MAX)
+            stl = model.filter_data_bin(season_data,'STL',BLK_STL_MIN_MAX)
         
             #find the players that have a blk avg in the range of BLK_STL_MIN_MAX
-            blk = data.filter_data_bin(season_data,'BLK',BLK_STL_MIN_MAX)
+            blk = model.filter_data_bin(season_data,'BLK',BLK_STL_MIN_MAX)
             
             #find the players that have a assist avg in the range of HIGH_ASSIST
-            ast = data.filter_data_bin(season_data,'AST',HIGH_ASSIST)
+            ast = model.filter_data_bin(season_data,'AST',HIGH_ASSIST)
         
             #find the intersection between low turnover avg players and high assist avg players
             inter_tov_ast = set(tov).intersection(ast)
@@ -253,7 +259,7 @@ def main():
             union_def = list(set(blk).union(stl))
             
             #find the average assists of a player for current season 
-            avg_ast = sum(assists)/(float(data.SEASON_LENGTH)*len(assists))
+            avg_ast = sum(assists)/(float(model.SEASON_LENGTH)*len(assists))
             data_vals.append(round(avg_ast,2))
         
             #check if old season or new season 

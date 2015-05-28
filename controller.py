@@ -1,5 +1,5 @@
 import cgi
-import data
+import model
 import view
 import os
 
@@ -29,36 +29,36 @@ def main():
 
         try:
 
-            all_data = data.get_all_data(data.DATA_FILE)
-            interval = data.att_intervals()
+            all_data = model.get_all_data(model.DATA_FILE)
+            interval = model.att_intervals()
 
             # get key elements from row and column
 
             if row in ['Season', 'Tm']:
                 #get unique values for row 
-                unique_row = data.create_keys(all_data, row)
+                unique_row = model.create_keys(all_data, row)
                 #row header for table str 
                 unique_row_str = unique_row
             else:
                 #find the min and max value for row
-                row_min_max = data.min_max(all_data, row)
+                row_min_max = model.min_max(all_data, row)
                 #row header
-                unique_row = data.get_bin_header(row_min_max[0],row_min_max[1], interval[row])
+                unique_row = model.get_bin_header(row_min_max[0],row_min_max[1], interval[row])
                 #row header for table str
-                unique_row_str = data.get_bin_str(unique_row)
+                unique_row_str = model.get_bin_str(unique_row)
 
             if col in ['Season', 'Tm']:
                 #get unique values for col
-                unique_col = data.create_keys(all_data, col)
+                unique_col = model.create_keys(all_data, col)
                 #row header for table col
                 unique_col_str = unique_col
             else:
                 #find the min and max value for col
-                col_min_max = data.min_max(all_data, col)
+                col_min_max = model.min_max(all_data, col)
                 #col header
-                unique_col = data.get_bin_header(col_min_max[0],col_min_max[1], interval[col])
+                unique_col = model.get_bin_header(col_min_max[0],col_min_max[1], interval[col])
                 #col header for table str 
-                unique_col_str = data.get_bin_str(unique_col)
+                unique_col_str = model.get_bin_str(unique_col)
 
             # if search query is passed, filter unique_row or unique_col using the query
             search_row = row
@@ -87,7 +87,7 @@ def main():
 
 
             # get pivot table values
-            pvt_vals = data.get_pvt_vals(
+            pvt_vals = model.get_pvt_vals(
                 all_data,
                 row,
                 col,
@@ -97,7 +97,7 @@ def main():
                 unique_col,
                 )
 
-            pvt_vals = data.pvt_table_total(pvt_vals, mode)
+            pvt_vals = model.pvt_table_total(pvt_vals, mode)
 
             # get html of the pivot table contents
 
@@ -115,7 +115,7 @@ def main():
             view.print_error(val_err)
     else:
 
-        view.print_select()
+        view.print_home()
 
 main()
         

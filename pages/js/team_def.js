@@ -35,7 +35,7 @@ $(function () {
         },
         series: [{
             name: 'Old Seasons',
-            data:[ {y : 12.82, color: 'rgb(124,181,236)'},{y : 12.17, color: 'rgb(124,181,236)'},{y : 12.39, color: 'rgb(124,181,236)'},{y : 12.5, color: 'rgb(124,181,236)'},{y : 11.4, color: 'rgb(67,67,72)'},{y : 11.25, color: 'rgb(67,67,72)'},{y : 11.16, color: 'rgb(67,67,72)'},{y : 11.39, color: 'rgb(67,67,72)'}]
+            data:[ {y : 12.82, color: 'rgb(124,181,236)'},{y : 12.17, color: 'rgb(124,181,236)'},{y : 12.39, color: 'rgb(124,181,236)'},{y : 12.5, color: 'rgb(124,181,236)'},{y : 11.4, color: 'rgb(67,67,72)'},{y : 11.24, color: 'rgb(67,67,72)'},{y : 11.16, color: 'rgb(67,67,72)'},{y : 11.39, color: 'rgb(67,67,72)'}]
                 
                 }, {name: 'New Seasons',
                     data: []

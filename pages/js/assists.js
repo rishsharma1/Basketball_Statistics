@@ -35,10 +35,14 @@ $(function () {
                 }
             },
     
-            series: [{
-                name: 'Season',
-                    data: [1.54, 1.49, 1.45, 1.47, 1.45, 1.41, 1.41, 1.4]
+            series: [
+                {name: 'Season',
+                    data: [1.55, 1.5, 1.45, 1.47, 1.45, 1.42, 1.42, 1.4]},
+                {name:  'Seasons Divider',
+                    data: [],
+                    color: '#FF9E28'
+                }
        
-                }]
+                ]
             });
         });
