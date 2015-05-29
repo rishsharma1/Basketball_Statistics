@@ -207,16 +207,16 @@ def get_pvt_vals(data, row, col, val, mode, unique_row, unique_col):
 
 
 
-#for each pvt_table index, which is a row, we
+#for each row and column of pivot table, we
 #want to sum the list of values, as long as they
 #are not null,and then append the total of each row
-#back into the pvt_table 
-def pvt_table_total(pvt_table,mode):
+# and each column back into the pvt_table 
+def pvt_table_total(pvt_table):
     
     #making space for the totals in pvt_table    
-    pvt_table.append((pvt_table[-1][0]+1,[]))
-                          
-                     
+    pvt_table.append((pvt_table[-1][0]+1,[]))  
+    
+    #calculate sum of rows of each column   
     for index in range(len(pvt_table[0][1])):
         
         sum = 0
@@ -226,9 +226,21 @@ def pvt_table_total(pvt_table,mode):
             if type(pvt_table[row][1][index]) != str:
                 sum += pvt_table[row][1][index]
 
-        pvt_table[-1][1].append(sum)                                                              
-                                                              
+        pvt_table[-1][1].append(sum)                                                      
     
+    #calculate sum of columns of each row
+    for row in range(len(pvt_table)):
+        sum = 0
+        for col in range(len(pvt_table[row][1])):
+            col_val = pvt_table[row][1][col]
+            if type(col_val) != str:
+                sum += col_val
+                
+        if row != len(pvt_table)-1:
+            pvt_table[row][1].append(sum)
+        else:
+            pvt_table[row][1].append('null')    
+        
     return pvt_table
 
     

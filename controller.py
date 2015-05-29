@@ -4,6 +4,7 @@ import view
 import os
 
 PIVOT = 'select.html'
+CONTROLLER = 'controller.py'
 SEARCH_ERROR = 'No item was found'
 
 def main():
@@ -97,22 +98,31 @@ def main():
                 unique_col,
                 )
 
-            pvt_vals = model.pvt_table_total(pvt_vals, mode)
+            # add sum of rows and columns to pvt_vals
+            pvt_vals = model.pvt_table_total(pvt_vals)
 
-            # get html of the pivot table contents
-
+            # add total to the end of row header and column header
             unique_row_str.append('Total')
+            unique_col_str.append('Total')
+            
+            # get pivot table title
             title_str = view.create_title(row, col, val, mode, searchby, search)
+            
+            # get html of the pivot table contents
             html_str = view.create_table_str(pvt_vals, unique_row_str)
 
             # print html_str
-            
-            
             if html_str:
-                view.print_table(pvt_vals, title_str,row, unique_row_str,unique_col_str, html_str)
+                view.print_table(pvt_vals, title_str,row, unique_row_str, unique_col_str, html_str)
+                
         except ValueError, val_err:
 
             view.print_error(val_err)
+            
+    elif prev_page == CONTROLLER:
+        
+        view.print_select()
+        
     else:
 
         view.print_home()

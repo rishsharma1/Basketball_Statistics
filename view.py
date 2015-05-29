@@ -15,10 +15,12 @@ RED_BOUNDARY = 51     #relative percentage of pivot table value above which blue
 MAX_LIGNTNESS = 98    #maximum number of lightness argument of hsla function
 ROW_HEADER_LEN = 1    #the length the row header occupies rows of the pivot table
 COL_HEADER_LEN = 1    #the length the column header occupies columns of the pivot table
+ROW_FOOTER_LEN = 1    #the length the row total
 MAX = 100             #used for the legend
 INCREMENTS = 10       #used for the legend 
-
+    
 PIVOT_CSS = 'pages/css/pvt_style.css'
+PIVOT_CSS_TRANS = 'pages/css/pvt_style_trans.css'
 
 KEYWORD_DICT = {
 "Season":"Season",
@@ -51,6 +53,7 @@ def create_header():
     header_str += '    <!-- import jQuery -->\n'
     header_str += '    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>\n'
     header_str += '    <script src="pages/js/bootstrap.js"></script>\n'
+    header_str += '    <script src="pages/js/pvt_table.js"></script>\n'
     
     return header_str
 
@@ -91,15 +94,18 @@ def css_header():
     table_css_str += '#t_header {\n'
     table_css_str += '    margin-bottom:30px;\n'
     table_css_str += '}\n'
+    table_css_str += '#select_btn, #trans_btn, #switch_btn {\n'
+    table_css_str += '    margin-right:10px;\n'
+    table_css_str += '    margin-bottom:25px;\n'
+    table_css_str += '}\n'  
     table_css_str += '#pTable td, #pTable th {\n'
     table_css_str += '    margin: 0;\n'    
     table_css_str += '    text-align: center;\n'
     table_css_str += '    vertical-align: center;\n'
     table_css_str += '    border: 0 !important;\n'
     table_css_str += '}\n'
-    
-    return table_css_str
 
+    return table_css_str
 
 #create header of pivot table
 def create_table_header(row, unique_col):
@@ -118,6 +124,9 @@ def create_table_header(row, unique_col):
 # takes a sorted list to create a list containing lower and upper threshold values
 # any data outside the thresholds are regarded as outliers
 def get_outlier_thresholds(sList):
+    
+    minval = min(sList)
+    maxval = max(sList)
     
     q1 = 0.0    #lower quartile
     q3 = 0.0    #upper quartile
@@ -146,6 +155,10 @@ def get_outlier_thresholds(sList):
     lThsld = q1 - 1.5 * iqd if q1 - 1.5 * iqd >= 0 else 0
     uThsld = q3 + 1.5 * iqd
     
+    if maxval < uThsld:
+        uThsld = maxval
+    if minval > lThsld:
+        lThsld = minval
     
     return [lThsld, uThsld]
 
@@ -165,48 +178,83 @@ def get_nth_child(elm, row, col, colour):
 
 
 
-#create css of pivot table
-def create_table_css(pvt_vals, row_len, col_len):
 
-    table_css_str = css_header()
+#returns css string for header and footer colouring
+def get_header_footer_css(row_len, col_len):
     
-    #max and min of sum or average corresponding to unique_row and unique_col
-    minval, maxval = get_outlier_thresholds(sorted(
-    [val for i in range(len(pvt_vals)) for val in pvt_vals[i][1] if val >= 0 and type(val) != str]))
-    
+    table_css_str = ''
+    table_css_trans_str = ''
     
     #apply colours to the table headings
     for row_cnt in range(1, row_len+ROW_HEADER_LEN+1):
         
-        for col_cnt in range(1, col_len+COL_HEADER_LEN+2):
+        for col_cnt in range(1, col_len+COL_HEADER_LEN+1):
 
+            if col_cnt == col_len+COL_HEADER_LEN and row_cnt == 1:
+                
+                table_css_str += get_nth_child(TH, row_cnt, col_cnt, FOOTER_COLOUR)
+                table_css_trans_str += get_nth_child(TH, col_cnt, row_cnt, FOOTER_COLOUR) 
+                continue
+            
+            elif col_cnt == col_len+COL_HEADER_LEN:
+                
+                table_css_str += get_nth_child(TD, row_cnt, col_cnt, FOOTER_COLOUR)
+                table_css_trans_str += get_nth_child(TD, col_cnt, row_cnt, FOOTER_COLOUR) 
+                continue
+                
             #first row
             if row_cnt == 1:
                 
                 table_css_str += get_nth_child(TH, row_cnt, col_cnt, HEADER_COLOUR)
+                table_css_trans_str += get_nth_child(TH, col_cnt, row_cnt, HEADER_COLOUR)
                 
             #the first column of the bottom row (total row)
             elif col_cnt == 1 and row_cnt == row_len+ROW_HEADER_LEN:
 
                 table_css_str += get_nth_child(TH, row_cnt, col_cnt, FOOTER_COLOUR)
+                table_css_trans_str += get_nth_child(TH, col_cnt, row_cnt, FOOTER_COLOUR)
+            
+            elif row_cnt == row_len+ROW_HEADER_LEN:
+
+                table_css_str += get_nth_child(TD, row_cnt, col_cnt, FOOTER_COLOUR)
+                table_css_trans_str += get_nth_child(TD, col_cnt, row_cnt, FOOTER_COLOUR)
                 
             #first column   
             elif col_cnt == 1:
                 
                 table_css_str += get_nth_child(TH, row_cnt, col_cnt, HEADER_COLOUR)
-                                          
-            continue
+                table_css_trans_str += get_nth_child(TH, col_cnt, row_cnt, HEADER_COLOUR)
+
+    return [table_css_str, table_css_trans_str]     
+
+
+
+
+
+#create css of pivot table
+def create_table_css(pvt_vals, row_len, col_len):
+
+    table_css_str = css_header()
+    table_css_trans_str = table_css_str
+    
+    #max and min of sum or average corresponding to unique_row and unique_col
+
+    minval, maxval = get_outlier_thresholds(sorted(
+    [val for i in range(len(pvt_vals)-ROW_FOOTER_LEN) for val in pvt_vals[i][1][:-1] if val >= 0 and type(val) != str]))
+
+    header_footer_css = get_header_footer_css(row_len, col_len)
+    table_css_str += header_footer_css[0]
+    table_css_trans_str += header_footer_css[1]
                 
     #apply colours to table contents
-    for row_cnt in range(ROW_HEADER_LEN+1, row_len+ROW_HEADER_LEN+1):
-        
-        for col_cnt in range(COL_HEADER_LEN+1, col_len+COL_HEADER_LEN+1):  
-            
+    for row_cnt in range(ROW_HEADER_LEN+1, row_len+ROW_HEADER_LEN):
+        for col_cnt in range(COL_HEADER_LEN+1, col_len+COL_HEADER_LEN):  
+
             #get the value of each table cell
             pvt_val = pvt_vals[row_cnt-ROW_HEADER_LEN-1][1][col_cnt-COL_HEADER_LEN-1]
             
             #if table cell is not blank, calculate colour
-            if(pvt_val > 0 and pvt_val != 'null'):               
+            if(pvt_val >= 0 and pvt_val != 'null'):               
 
                 # adjust outliers to the threshold values
                 if pvt_val < minval:
@@ -222,7 +270,6 @@ def create_table_css(pvt_vals, row_len, col_len):
                     colour = BLANK_COLOUR
                 else :
                     rel_pos = int(abs(math.ceil((((pvt_val - minval) / float(maxval - minval)) * 100))))
-
                     #calculation of colour according to the relative position of each table value
                     if rel_pos >= RED_BOUNDARY:
                         colour = 'hsla(%d,%d%%,%d%%,%f)'%(RED, SATURATION, 
@@ -231,18 +278,16 @@ def create_table_css(pvt_vals, row_len, col_len):
                         colour = 'hsla(%d,%d%%,%d%%,%f)'\
                             %(BLUE, SATURATION, BLUE_BOUNDARY+int(rel_pos*((MAX_LIGNTNESS-BLUE_BOUNDARY)/float(BLUE_BOUNDARY))), OPAQUE) 
 
-                table_css_str += get_nth_child(TD, row_cnt-1, col_cnt, colour)
+                table_css_str += get_nth_child(TD, row_cnt, col_cnt, colour)
+                table_css_trans_str += get_nth_child(TD, col_cnt, row_cnt, colour)
                 
             #if table cell is blank, apply "blank colour" to the cell    
             else:
-                
-                #the bottom row (total row)
-                if row_cnt == row_len+ROW_HEADER_LEN:
-                    colour = FOOTER_COLOUR   
-                else:
-                    colour = BLANK_COLOUR 
-                    
-                table_css_str += get_nth_child(TD, row_cnt, col_cnt, colour)                  
+
+                colour = BLANK_COLOUR 
+                table_css_str += get_nth_child(TD, row_cnt, col_cnt, colour)
+                table_css_trans_str += get_nth_child(TD, col_cnt, row_cnt, colour)  
+                              
 
     table_css_str += '</style>\n' 
     
@@ -251,7 +296,12 @@ def create_table_css(pvt_vals, row_len, col_len):
     css_file.write(table_css_str)
     css_file.close()
 
+    css_file = open(PIVOT_CSS_TRANS,'w')
+    css_file.write(table_css_trans_str)
+    css_file.close()
+    
     return '<link rel="stylesheet" type="text/css" href="%s">\n'%(PIVOT_CSS)
+
 
 
 
@@ -266,7 +316,7 @@ def create_table_str(pvt_vals, unique_row):
 
         table_str += '<tr>\n'
         table_str += '<th>%s</th>\n'%( unique_row[pvt_vals[index][0]])
-
+        
         for item in pvt_vals[index][1]:
 
             #put empty cell
@@ -277,7 +327,7 @@ def create_table_str(pvt_vals, unique_row):
                 table_str += '<td>%d</td>\n'%(item)
             #check for float for formatting 
             else:
-                table_str += '<td>%s</td>\n'%("{0:.2f}".format(item))                                                 
+                table_str += '<td>%s</td>\n'%("{0:.2f}".format(item))                 
 
         table_str += '</tr>\n' 
 
@@ -302,6 +352,11 @@ def print_table(pvt_vals,title_str, row, unique_row, unique_col, table_str):
     #add styling here
     output += '<div class="container">\n'
     output +=  title_str
+    output += '<div>\n'
+    output += '<button id="select_btn" type="button" class="btn btn-default">Select again</button>\n'
+    output += '<button id="trans_btn" type="button" class="btn btn-default">Transpose</button>\n'
+    output += '<button id="switch_btn" type="button" class="btn btn-default">Total/Mean</button>\n'
+    output += '</div>\n'
     output += '<div class="table-responsive">\n'
     output += '<table id="pTable" class="table table-borderless table-hover">\n'
     output += create_table_header(row, unique_col)
@@ -349,7 +404,7 @@ def create_legend():
     output += '<td colspan="6" style="text-align:right">(Min)</td></tr></table></div></div>'
     return output 
 
-#prints html page that will redirect to select.html
+#prints html page
 def print_home():
 
     select_str =  'Content-Type: text/html\n\n'
@@ -362,6 +417,18 @@ def print_home():
 
     print select_str
     
+#prints html page that will redirect to select.html
+def print_select():
+
+    select_str =  'Content-Type: text/html\n\n'
+    select_str += '<!DOCTYPE html>\n'
+    select_str +=  '<html>\n'
+    select_str += '<head>\n'
+    select_str += '<meta http-equiv="refresh" content="0; url=pages/select.html"/>\n'
+    select_str += '</head>\n'
+    select_str += '</html>\n'
+
+    print select_str    
 
 #this function takes the short form, or
 #the form the csv file and translates into full form
