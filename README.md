@@ -1,34 +1,18 @@
-Basketball Website
+# Basketball Statistics Analysis
 
-Group Members:
-    
-    Rishabh Sharma
-    Masaki Goto
-    Huy Nguyen
+## Link to Project
+http://ivle.informatics.unimelb.edu.au/serve/rishabhs/Basketball_Project-master/pages/home.html
 
-Header Image Reference: http://www.freewebheaders.com/sport/basketball-headers/
-Presentation Link : http://prezi.com/hvzjscrrchcp/?utm_campaign=share&utm_medium=copy&rc=ex0share
-    
+## Pivot Table
+Use the input for the pivot table to get interesting insights into basketball statistics, with various attributes available, including, Season, Player, Team, Points, Steals ,etc.
 
-Steps to use application:
-    
-    1.Serve controller.py (MVC Structure)
-    
-    2. If you select "Select Data"
-        
-        -Choose a row,col,mode and value
-        
-        -if you wish to search, make sure your "search by"  is in row or column
-        
-        
-        -if your searchby is Season:
-        
-            -seasons are in the form of '1999-00','2000-01','2001-02' etc. ranging from 1999-2007
-            
-            
-        -if your searchby is Team, then put in the three letter code for your team:
-            
-            -'MIL', Milwaukee Bucks
+## Analysis
+Look at our findings in relation to NBA season's from 1999-2007, where we concluded older seasons were better at defence, sharing the ball and scoring.
+
+## Index for search
+
+### Team Codes
+             'MIL', Milwaukee Bucks
              'GSW', Golden State Warriors
              'MIN', Minnesota Timberwolves
              'MIA', Miami Heat
@@ -43,16 +27,16 @@ Steps to use application:
              'TOR', Toronto Raptors
              'SEA', Seattle SuperSonics
              'CHI', Chicago Bulls
-             'SAS', San Antonio Spurs 
+             'SAS', San Antonio Spurs
              'CHA', Charlotte Hornets
              'UTA', Utah Jazz
-             'VAN', Vancouver Grizzlies 
+             'VAN', Vancouver Grizzlies
              'CHH', Chicago Hustle
              'CLE', Cleveland Cavaliers
              'HOU', Houston Rockets
              'PHO', Phoenix Suns
              'WAS', Washington Wizards
-             'LAL', Los Angeles Lakers 
+             'LAL', Los Angeles Lakers
              'PHI', Philadelphia 76ers
              'NOH', New Orleans Hornets
              'NOK', New Orleans/Oklahoma City Hornets
@@ -61,6 +45,11 @@ Steps to use application:
              'SAC', Sacramento Kings
              'ORL', Orlando Magic
              'IND'  Indiana Pacers
-    
 
-        
+### Season codes
+Seasons are in the form of '1999-00','2000-01','2001-02' etc. ranging from 1999-2007
+
+## Group Members
+* Rishabh Sharma
+* Masaki Goto
+* Huy Nguyen
